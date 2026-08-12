@@ -1,0 +1,19 @@
+{
+  "name": "Your Name",
+  "summary": "...",
+  "skills": [
+    "TypeScript",
+    "React",
+    "Next.js",
+    "Node.js",
+    "MongoDB"
+  ],
+  "experience": [],
+  "projects": [],
+  "education": [],
+  "preferences": {
+    "locations": [],
+    "remote": true,
+    "minimumSalary": 0
+  }
+}
