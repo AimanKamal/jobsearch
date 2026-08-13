@@ -2,7 +2,7 @@ import { getJobs, saveJobs } from "@/lib/jobs";
 import { analyzeJob } from "@/lib/llm";
 import { extractPageText } from "@/lib/llm";
 
-const COOLDOWN = 5 * 60 * 1000;
+const COOLDOWN = process.env.SLEEP_TIME_MS ? parseInt(process.env.SLEEP_TIME_MS) : 5000;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

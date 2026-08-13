@@ -108,7 +108,7 @@ export default function Home() {
           {jobRecords.length > 0 && (
             <ul className="mt-5">
               {jobRecords.map((job, index) => (
-                <li key={index} className={`mb-5 ${job.status === "completed" ? "bg-green-100" : "bg-yellow-100"} p-4 rounded-lg`}>
+                <li key={index} className={`mb-5 ${job.status === "completed" ? "bg-green-100" : job.status === "failed" ? "bg-red-100" : "bg-yellow-100"} p-4 rounded-lg`}>
                   <strong>URL:</strong> {job.url} <br />
                   <strong>Status:</strong> {job.status} <br />
                   {job.status === "completed" && job.analysis && (
@@ -160,7 +160,7 @@ export default function Home() {
                 <div>
                   <strong>Company:</strong> {analysis.job.company}<br />
                   <strong>Location:</strong> {analysis.job.location}<br />
-                  <strong>Salary:</strong> {analysis.job.salary}<br />
+                  <strong>Salary:</strong> {analysis.job.salary ? `${analysis.job.salary.minimum ?? ""} - ${analysis.job.salary.maximum ?? ""} ${analysis.job.salary.currency ?? ""}` : "N/A"}<br />
                   <strong>Employment Type:</strong> {analysis.job.employmentType}<br />
                 </div>
 

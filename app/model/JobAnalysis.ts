@@ -3,7 +3,16 @@ export type JobAnalysis = {
     title: string;
     company: string | null;
     location: string | null;
-    salary: string | null;
+    salary: {
+      minimum: number | null;
+      maximum: number | null;
+      currency: string | null;
+    } | null;
+    workingArrangement:
+      | "remote"
+      | "hybrid"
+      | "on-site"
+      | "unknown";
     employmentType: string | null;
     responsibilities: string[];
     requirements: string[];
