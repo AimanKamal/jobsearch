@@ -1,6 +1,13 @@
-import type { JobAnalysis } from "../model/JobAnalysis";
+import dotenv from "dotenv";
+
+dotenv.config({
+  path: ".env.local",
+});
+
+import type { JobAnalysis } from "../app/model/JobAnalysis";
 import { ai } from "./ai";
-import candidate from "../data/candidate.json";
+import candidate from "@/data/candidate.json";
+import * as cheerio from "cheerio";
 
 export async function analyzeJob(jobText: string): Promise<JobAnalysis> {
   const response = await ai.chat.completions.create({
@@ -202,4 +209,38 @@ export async function generateCoverLetter(
   }
 
   return content.trim();
+}
+
+export function extractPageText(html: string) {
+  const $ = cheerio.load(html);
+
+  $("script, style, noscript, iframe, svg").remove();
+
+  const main =
+    $("main").first().length
+      ? $("main").first()
+      : $("article").first().length
+        ? $("article").first()
+        : $('[role="main"]').first().length
+          ? $('[role="main"]').first()
+          : $("body");
+
+  // Add newlines around block-level elements
+  main.find("br").replaceWith("\n");
+
+  main.find(
+    "p, div, section, article, li, h1, h2, h3, h4, h5, h6"
+  ).each((_, el) => {
+    $(el).prepend("\n");
+    $(el).append("\n");
+  });
+
+  return {
+    title: $("title").text(),
+    bodyText: main
+      .text()
+      .replace(/[ \t]+/g, " ")     // collapse spaces/tabs
+      .replace(/\n\s*\n+/g, "\n\n") // collapse excessive blank lines
+      .trim(),
+  };
 }

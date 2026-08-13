@@ -24,3 +24,17 @@ export type JobAnalysis = {
     }[];
   };
 };
+
+export type JobRecord = {
+  id: string;
+  url: string;
+
+  status: "queued" | "processing" | "completed" | "failed";
+
+  addedAt: string;
+  startedAt?: string;
+  completedAt?: string;
+
+  analysis?: JobAnalysis;
+  error?: string;
+};

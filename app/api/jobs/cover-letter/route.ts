@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateCoverLetter } from "@/app/lib/llm";
+import { generateCoverLetter } from "@/lib/llm";
 import type { JobAnalysis } from "@/app/model/JobAnalysis";
 
 export async function POST(request: NextRequest) {
