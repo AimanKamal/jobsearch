@@ -32,18 +32,25 @@ export async function saveJobs(jobs: JobRecord[]) {
   );
 }
 
-export async function addJob(url: string): Promise<JobRecord> {
+export async function addJob(jobId: string): Promise<JobRecord> {
   const jobs = await getJobs();
 
-  const existing = jobs.find((job) => job.url === url);
+  const existing = jobs.find((job) => job.jobId === jobId);
 
   if (existing) {
     return existing;
   }
 
   const job: JobRecord = {
-    id: crypto.randomUUID(),
-    url,
+    jobId,
+    title: "",
+    company: "",
+    location: "",
+    extensions: [],
+    detectedExtensions: [],
+    description: "",
+    jobHighlights: [],
+    applyOptions: [],
     status: "queued",
     addedAt: new Date().toISOString(),
   };

@@ -16,6 +16,14 @@ export type JobAnalysis = {
     employmentType: string | null;
     responsibilities: string[];
     requirements: string[];
+    relatedProjects: {
+      name: string;
+      description: string;
+    }[];
+    relatedExperiences: {
+      role: string;
+      company: string;
+    }[];
   };
 
   match: {
@@ -35,15 +43,52 @@ export type JobAnalysis = {
 };
 
 export type JobRecord = {
-  id: string;
-  url: string;
+  // id: string;
+  // url: string;
+
+  // status: "queued" | "processing" | "completed" | "failed";
+
+  // addedAt: string;
+  // startedAt?: string;
+  // completedAt?: string;
+
+  // analysis?: JobAnalysis;
+  // error?: string;
+
+  jobId?: string;
+  title: string;
+  company: string;
+  location: string;
+  extensions: string[];
+  detectedExtensions: string[];
+  description: string;
+  jobHighlights: {
+    title: string;
+    items: string[];
+  }[];
+  applyOptions: {
+    text: string;
+    link: string;
+  }[];
 
   status: "queued" | "processing" | "completed" | "failed";
-
-  addedAt: string;
+  addedAt?: string;
   startedAt?: string;
   completedAt?: string;
 
   analysis?: JobAnalysis;
   error?: string;
+};
+
+export interface JobContext {
+  title: string;
+  company: string;
+  location: string;
+  extensions: string[];
+  detectedExtensions: string[];
+  description: string;
+  jobHighlights: {
+    title: string;
+    items: string[];
+  }[];
 };

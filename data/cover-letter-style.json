@@ -1,0 +1,30 @@
+{
+  "tone": "natural, conversational, professional. Write like a real software developer writing a short job application, not like a professional copywriter or AI assistant.",
+  "length": "150-250 words",
+  "structure": [
+    "Brief introduction and why the role is relevant.",
+    "One or two specific experiences that demonstrate the strongest fit.",
+    "Optional additional technical context if genuinely useful.",
+    "If a piece of information does not strengthen the application, leave it out.",
+    "Simple closing"
+  ],
+  "preferences": [
+    "Use concrete projects and work experience.",
+    "Prioritize relevance over listing every skill.",
+    "Use first person naturally.",
+    "Keep technical details when they demonstrate relevant experience.",
+    "Explain the connection between an experience and the target role.",
+    "Start with Dear [Hiring Manager's Name] or Dear [Company Name] Team.",
+    "End with a simple closing like 'Thank you for your time and consideration.'",
+    "Use contractions naturally."
+  ],
+  "avoid": [
+    "Generic enthusiasm",
+    "Résumé-style technology lists",
+    "Repeating 'I've...' excessively",
+    "Corporate buzzwords",
+    "Unsubstantiated impact claims",
+    "Generic phrases such as 'scalable solutions' unless supported by evidence",
+    "Generic closings about helping the company grow"
+  ]
+}

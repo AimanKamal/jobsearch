@@ -43,3 +43,5 @@ next-env.d.ts
 # data
 candidate.json
 jobs.json
+jobs copy.json
+discover_jobs*
