@@ -31,6 +31,7 @@ export default function Home() {
   const [jobRecords, setJobRecords] = useState<JobRecord[]>([]);
   const [jobs, setJobs] = useState<JobAnalysis[]>([]);
   const [coverLetter, setCoverLetter] = useState<string | null>(null);
+  const [showQueue, setShowQueue] = useState<boolean>(false);
 
   useEffect (() => {
     fetchJobs().then(({ jobRecords, jobAnalyses }) => {
@@ -80,6 +81,26 @@ export default function Home() {
     }
   };
 
+  const handleReset = async (jobId: string) => {
+    console.log("Resetting job with ID:", jobId);
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/jobs/${jobId}/reset`, {
+        method: "POST",
+      });
+      const data = await response.json();
+      console.log("Job reset result:", data);
+      // Refresh the job records and analyses after reset
+      const { jobRecords, jobAnalyses } = await fetchJobs();
+      setJobRecords(jobRecords);
+      setJobs(jobAnalyses);
+    } catch (error) {
+      console.error("Error resetting job:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center gap-10 py-32 px-16 bg-white dark:bg-black sm:items-start">
@@ -103,13 +124,26 @@ export default function Home() {
         </div>
 
         {/* Jobs in queue */}
-        <div>
+        {!showQueue ? (
+          <button 
+            className="absolute right-10 bottom-10 w-[15%] p-5 bg-blue-300 rounded-3xl font-bold"
+            onClick={() => setShowQueue(true)}>
+            Show Jobs in Queue
+          </button>
+        ) : (
+          <div className="absolute right-10 w-[27%] p-5 bg-white rounded-3xl">
+            <div className="flex justify-between items-center">
           <h1 className="font-bold text-3xl">Jobs in Queue</h1>
+              <button 
+                className="bg-red-500 text-white font-semibold px-4 py-2 rounded-full 
+                  hover:bg-red-300 hover:cursor-pointer transition-colors duration-300"
+                onClick={() => setShowQueue(false)}>Close</button>
+            </div>
           {jobRecords.length > 0 && (
-            <ul className="mt-5">
+              <ul className="mt-5 text-sm max-h-[80vh] overflow-y-auto">
               {jobRecords.map((job, index) => (
                 <li key={index} className={`mb-5 ${job.status === "completed" ? "bg-green-100" : job.status === "failed" ? "bg-red-100" : "bg-yellow-100"} p-4 rounded-lg`}>
-                  <strong>URL:</strong> {job.url} <br />
+                    <strong>URL:</strong> {job.jobId} <br />
                   <strong>Status:</strong> {job.status} <br />
                   {job.status === "completed" && job.analysis && (
                     <>
@@ -117,6 +151,12 @@ export default function Home() {
                       <strong>Company:</strong> {job.analysis.job.company} <br />
                     </>
                   )}
+
+                    {/* Reset button */}
+                    <button className="p-2 mt-2 bg-red-500 text-white font-bold rounded-xl" 
+                      onClick={() => handleReset(job.jobId ?? "")}>
+                        Reset
+                    </button>
                 </li>
               ))}
             </ul>
@@ -127,6 +167,7 @@ export default function Home() {
             </div>
           )}
         </div>
+        )}
 
         {/* Analysis */}
         <div className="w-full">
