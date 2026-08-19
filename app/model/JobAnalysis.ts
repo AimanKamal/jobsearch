@@ -67,7 +67,7 @@ export type JobRecord = {
     items: string[];
   }[];
   applyOptions: {
-    text: string;
+    title: string;
     link: string;
   }[];
 
