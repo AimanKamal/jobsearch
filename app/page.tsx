@@ -42,6 +42,7 @@ export default function Home() {
     { title: "Completed Analysis", value: jobRecords.filter((job) => job.status === "completed").length },
     { title: "Jobs in Queue", value: jobRecords.filter((job) => ["queued", "processing"].includes(job.status)).length },
     { title: "Failed Jobs", value: jobRecords.filter((job) => job.status === "failed").length },
+    { title: "Skipped Jobs", value: jobRecords.filter((job) => job.status === "skipped").length },
   ];
 
   useEffect (() => {

@@ -50,8 +50,14 @@ async function processNextJob() {
 
   const job = jobs.find((job) => job.status === "queued");
 
+  if (!job) {
+    return false;
+  }
+  
   // skip if applyOptions is only BeBee
-  if (!job || isOnlyBebee(job)) {
+  if (isOnlyBebee(job)) {
+    job.status = "skipped";
+    await saveJobs(jobs);
     return false;
   }
 
@@ -136,16 +142,15 @@ async function main() {
     
     const processed = await processNextJob();
 
-    if (!processed) {
-      await sleep(process.env.SLEEP_TIME_MS ? parseInt(process.env.SLEEP_TIME_MS) : 300000);
-      continue;
-    }
-
     // cooldown before processing the next job in minutes and seconds
     const cooldownMs = process.env.SLEEP_TIME_MS ? parseInt(process.env.SLEEP_TIME_MS) : 300000;
     console.log(`Cooling down for ${formatDuration(cooldownMs)}...`);
-
     await sleep(cooldownMs);
+
+    if (!processed) {
+      continue;
+    }
+
   }
 }
 

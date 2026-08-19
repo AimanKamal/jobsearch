@@ -51,7 +51,7 @@ export async function analyzeJob(jobContext: JobContext, signal: AbortSignal): P
     {
       model: process.env.LM_MODEL!,
       temperature: 0.1,
-
+      
       messages: [
         {
           role: "system",

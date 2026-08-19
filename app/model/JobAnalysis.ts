@@ -71,7 +71,7 @@ export type JobRecord = {
     link: string;
   }[];
 
-  status: "queued" | "processing" | "completed" | "failed" | "applied" | "rejected";
+  status: "queued" | "processing" | "completed" | "failed" | "applied" | "rejected" | "skipped";
   addedAt?: string;
   startedAt?: string;
   completedAt?: string;
