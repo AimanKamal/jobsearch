@@ -61,3 +61,14 @@ export async function addJob(jobId: string): Promise<JobRecord> {
 
   return job;
 }
+
+export const isOnlyBebee = (job: JobRecord): boolean => {
+  const applyOptions = job?.applyOptions || [];
+  const onlyBebee = applyOptions.length === 1 && applyOptions[0].title.toLowerCase() === "bebee";
+
+  if (onlyBebee) {
+    console.log(`Skipping job ${job.title} - ${job.company} because it only has BeBee as an apply option.`);
+  }
+  
+  return onlyBebee;
+};

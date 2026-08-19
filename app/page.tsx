@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { JobAnalysis, JobRecord } from "./model/JobAnalysis";
 import CollapsibleSection from "./components/CollapsibleSection";
+import { TbOutbound } from "react-icons/tb";
+import { MetricContainer } from "./components/MetricContainer";
 
 const fetchJobs = async (): Promise<{ 
   jobRecords: JobRecord[]; jobAnalyses: JobAnalysis[] 
@@ -32,6 +34,15 @@ export default function Home() {
   const [jobs, setJobs] = useState<JobAnalysis[]>([]);
   const [coverLetter, setCoverLetter] = useState<string | null>(null);
   const [showQueue, setShowQueue] = useState<boolean>(false);
+
+  const metricItems = [
+    { title: "Total Jobs", value: jobRecords.length },
+    { title: "Applied Jobs", value: jobRecords.filter((job) => job.status === "applied").length },
+    { title: "Rejected Jobs", value: jobRecords.filter((job) => job.status === "rejected").length },
+    { title: "Completed Analysis", value: jobRecords.filter((job) => job.status === "completed").length },
+    { title: "Jobs in Queue", value: jobRecords.filter((job) => ["queued", "processing"].includes(job.status)).length },
+    { title: "Failed Jobs", value: jobRecords.filter((job) => job.status === "failed").length },
+  ];
 
   useEffect (() => {
     fetchJobs().then(({ jobRecords, jobAnalyses }) => {
@@ -101,10 +112,55 @@ export default function Home() {
     }
   };  
 
+  const handleMarkAsApplied = async (jobId: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/jobs/${jobId}/update-status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "applied" }),
+      });
+      await response.json();
+      // Refresh the job records and analyses after marking as applied
+      const { jobRecords, jobAnalyses } = await fetchJobs();
+      setJobRecords(jobRecords);
+      setJobs(jobAnalyses);
+    } catch (error) {
+      console.error("Error marking job as applied:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async (jobId: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/jobs/${jobId}/update-status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "rejected" }),
+      });
+      await response.json();
+      // Refresh the job records and analyses after marking as applied
+      const { jobRecords, jobAnalyses } = await fetchJobs();
+      setJobRecords(jobRecords);
+      setJobs(jobAnalyses);
+    } catch (error) {
+      console.error("Error marking job as applied:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl max-h-[100vh] flex-col items-center gap-10 py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="bg-blue-200 w-full p-5 rounded-3xl">
+      <main className="flex flex-1 w-full max-w-3xl 
+        max-h-[100vh] flex-col items-center gap-10 py-10 px-16 bg-white dark:bg-black sm:items-start">
+        {/* <div className="bg-blue-200 w-full p-5 rounded-3xl">
           <h1 className="font-bold text-3xl m-3">Job Search</h1>
           <div
             className="w-full flex gap-2 items-center p-2 rounded-lg bg-white border border-blue-400">
@@ -121,7 +177,7 @@ export default function Home() {
               onClick={handleSearch}>{loading ? "Analyzing..." : "Analyze"}</button>
 
           </div>
-        </div>
+        </div> */}
 
         {/* Jobs in queue */}
         {!showQueue ? (
@@ -142,10 +198,9 @@ export default function Home() {
             {jobRecords.length > 0 && (
               <ul className="mt-5 text-sm max-h-[80vh] overflow-y-auto">
                 {jobRecords.map((job, index) => (
-                  <li key={index} className={`mb-5 ${job.status === "completed" ? "bg-green-100" : job.status === "failed" ? "bg-red-100" : "bg-yellow-100"} p-4 rounded-lg`}>
-                    <strong>URL:</strong> {job.jobId} <br />
+                  <li key={index} className={`mb-5 ${job.status === "completed" ? "bg-blue-50" : job.status === "failed" ? "bg-red-100" : job.status === "applied" ? "bg-green-200" : "bg-yellow-100"} p-4 rounded-lg`}>
                     <strong>Status:</strong> {job.status} <br />
-                    {job.status === "completed" && job.analysis && (
+                    {["completed", "applied"].includes(job.status) && job.analysis && (
                       <>
                         <strong>Title:</strong> {job.analysis.job.title} <br />
                         <strong>Company:</strong> {job.analysis.job.company} <br />
@@ -172,14 +227,19 @@ export default function Home() {
         {/* Analysis */}
         <div className="w-full overflow-y-auto">
           <h1 className="font-bold text-3xl">Job Analysis</h1>
+          <MetricContainer items={metricItems} />
           {jobRecords.length > 0 && 
             jobRecords.filter((job) => job.status === "completed" && job.analysis).map(
               (job, index) => {
               // const jobUrl = jobRecords.find((job) => job.analysis === analysis)?.jobId || "";
               const analysis: JobAnalysis = job.analysis || {} as JobAnalysis;
               console.log("Rendering job analysis:", analysis);
+
               return (
-                <div key={index} className="flex flex-col gap-8 mt-10 w-full p-10 rounded-xl bg-blue-50 shadow-md">
+                <div key={index} className={`flex flex-col gap-8 mt-10 w-full p-10 rounded-xl ${job.status === 'applied' ? 'bg-green-300/20' : 'bg-blue-50'} shadow-md`}>
+                  <span className="capitalize px-2 py-1 text-xs font-semibold rounded-full bg-emerald-700 w-fit self-end text-white">
+                    {job.status}
+                  </span>
                   <div className="text-xl font-bold flex items-center gap-2 justify-between">
                     {/* title */}
                     {job.title}
@@ -273,25 +333,57 @@ export default function Home() {
                       onClick={() => handleGenerateCoverLetter(index)}
                       className="rounded-full bg-blue-500 text-white
                       font-semibold px-4 py-2 w-fit
+                      text-sm
                       hover:bg-blue-300 hover:cursor-pointer transition-colors duration-300"
                     >
                       Generate Cover Letter
                     </button>
 
+                    <button 
+                      onClick={() => handleReject(job.jobId ?? "")}
+                      className="rounded-full bg-red-500 text-white
+                      font-semibold px-4 py-2 w-fit
+                      text-sm
+                      disabled:bg-gray-400 disabled:cursor-not-allowed
+                      hover:bg-red-300 hover:cursor-pointer transition-colors duration-300"
+                      disabled={job.status === "applied" || !job.jobId}
+                    >
+                      Reject
+                    </button>
+
+                    <button 
+                      onClick={() => handleMarkAsApplied(job.jobId ?? "")}
+                      className="rounded-full bg-emerald-500 text-white
+                      font-semibold px-4 py-2 w-fit
+                      text-sm
+                      disabled:bg-gray-400 disabled:cursor-not-allowed
+                      hover:bg-emerald-300 hover:cursor-pointer transition-colors duration-300"
+                      disabled={job.status === "applied" || !job.jobId}
+                    >
+                      Mark as applied
+                    </button>
+
                   </div>
-                  {job.applyOptions.length > 0 && job.applyOptions.map((option, idx) => {
-                    return (
-                      <button 
-                        key={idx}
-                        onClick={() => window.open(option.link, "_blank")}
-                        className="rounded-full bg-sky-500 text-white
-                        font-semibold px-4 py-2 w-fit
-                        hover:bg-sky-300 hover:cursor-pointer transition-colors duration-300"
-                      >
-                        View Job at {option.title}
-                      </button>
-                    );
-                  })}
+                  <div className="flex flex-wrap gap-2">
+                    {job.applyOptions.length > 0 && job.applyOptions.map((option, idx) => {
+                      return (
+                        <button 
+                          key={idx}
+                          onClick={() => window.open(option.link, "_blank")}
+                          className="rounded-full bg-sky-500 text-white
+                          font-semibold px-4 py-2 w-fit
+                          hover:bg-sky-300 hover:cursor-pointer transition-colors duration-300
+                          text-sm"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span>View Job at</span>
+                            <span>{option.title}</span>
+                            <TbOutbound size={18} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )
             }
