@@ -26,6 +26,7 @@ async function main() {
       q: query,
       location: "Malaysia",
       api_key: process.env.SERPAPI_API_KEY,
+      chips: "date_posted:yesterday",
     });
 
     // validate and save the data to a json file
@@ -82,11 +83,15 @@ async function main() {
 
   // deduplicate the jobs data based on job_id
   const deduplicatedJobsData = [...existingJobsData, ...jobsData].reduce((acc: JobRecord[], job: JobRecord) => {
-    if (!acc.find((j) => j.jobId === job.jobId)) {
+    if (!acc.find((j) => {
+      return j.title + j.company + j.location === job.title + job.company + job.location
+    })) {
       acc.push(job);
     }
     return acc;
   }, []);
+
+  console.log(`New jobs discovered: ${deduplicatedJobsData.length}`);
 
   // save the deduplicated jobs data to jobs.json file
   try {
