@@ -1,11 +1,11 @@
 
-
+import type { RouteContext } from "@/lib/api";
 import { getJobs, saveJobs } from "@/lib/jobs";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest, context: RouteContext): Promise<NextResponse> {
   try {
-    const { id } = await request.json();
+    const { id } = await context.params;
 
     console.log(`Resetting job with ID: ${id}`);
 

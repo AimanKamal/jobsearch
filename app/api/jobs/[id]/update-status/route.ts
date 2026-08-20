@@ -1,16 +1,16 @@
 
-
+import type { RouteContext } from "@/lib/api";
 import { getJobs, saveJobs } from "@/lib/jobs";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PATCH(request: NextRequest): Promise<NextResponse> {
+export async function PATCH(request: NextRequest, context: RouteContext): Promise<NextResponse> {
   try {
-    const { id } = await request.json();
     const { status } = await request.json();
+    const { id } = await context.params;
 
-    console.log(`Mark as applied for job with ID: ${id}`);
+    console.log(`Updating status for job with ID: ${id} to ${status}`);
 
-    // Change the job status to "applied"
+    // Change the job status to the provided status
     // get the jobs from the database or storage
     const jobs = await getJobs();
 
@@ -28,6 +28,6 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     return new NextResponse(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {
     console.error(error);
-    return new NextResponse(JSON.stringify({ error: "Failed to mark job as applied" }), { status: 500 });
+    return new NextResponse(JSON.stringify({ error: "Failed to update job status" }), { status: 500 });
   }
 };

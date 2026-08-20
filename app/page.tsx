@@ -136,6 +136,10 @@ export default function Home() {
   };
 
   const handleReject = async (jobId: string) => {
+    if (!jobId) {
+      console.error("Job ID is undefined. Cannot reject job.");
+      return;
+    }
     try {
       setLoading(true);
       const response = await fetch(`/api/jobs/${jobId}/update-status`, {
@@ -234,7 +238,6 @@ export default function Home() {
               (job, index) => {
               // const jobUrl = jobRecords.find((job) => job.analysis === analysis)?.jobId || "";
               const analysis: JobAnalysis = job.analysis || {} as JobAnalysis;
-              console.log("Rendering job analysis:", analysis);
 
               return (
                 <div key={index} className={`flex flex-col gap-8 mt-10 w-full p-10 rounded-xl ${job.status === 'applied' ? 'bg-green-300/20' : 'bg-blue-50'} shadow-md`}>
