@@ -1,7 +1,6 @@
 import { JobContext } from "@/app/model/JobAnalysis";
 import { getJobs, isOnlyBebee, saveJobs } from "@/lib/jobs";
 import { analyzeJob } from "@/lib/llm";
-import { extractPageText } from "@/lib/llm";
 import { isStopping, registerController, requestShutdown, unregisterController } from "@/lib/shutdown";
 
 // graceful shutdown handling
