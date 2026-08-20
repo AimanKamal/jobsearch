@@ -1,11 +1,11 @@
 
 
 import { getJobs, saveJobs } from "@/lib/jobs";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const { id } = await params;
+    const { id } = await request.json();
 
     console.log(`Resetting job with ID: ${id}`);
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const jobIndex = jobs.findIndex((job) => job.jobId === id);
 
     if (jobIndex === -1) {
-      return new Response(JSON.stringify({ error: "Job not found" }), { status: 404 });
+      return new NextResponse(JSON.stringify({ error: "Job not found" }), { status: 404 });
     }
 
     jobs[jobIndex].status = "queued";
@@ -28,9 +28,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Save the updated jobs back to the database or storage
     await saveJobs(jobs);
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    return new NextResponse(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "Failed to reset job" }), { status: 500 });
+    return new NextResponse(JSON.stringify({ error: "Failed to reset job" }), { status: 500 });
   }
 };
