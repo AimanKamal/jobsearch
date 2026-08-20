@@ -91,7 +91,9 @@ async function main() {
     return acc;
   }, []);
 
-  console.log(`New jobs discovered: ${deduplicatedJobsData.length}`);
+  console.log(`New jobs discovered: ${
+    existingJobsData.length - deduplicatedJobsData.length
+  }`);
 
   // save the deduplicated jobs data to jobs.json file
   try {
